@@ -1,9 +1,25 @@
-import { useSetRecoilState } from "recoil";
-import { Categories, IToDo, toDoState } from "../atoms";
+import { useRecoilValue, useSetRecoilState } from "recoil";
+import { CategoriesState, IToDo, toDoState } from "../atoms";
+import styled from "styled-components";
 
+const DeleteButton = styled.button`
+  border: none;
+  background-color: inherit;
+  cursor: pointer;
+`
+
+const Li = styled.li`
+  margin-bottom: 10px;
+`
+
+const ToDoWrap = styled.div`
+  width: 100%;
+  padding-left: 10px;
+`
 
 const ToDo = ({ text, category, id }: IToDo) => {
   const setToDos = useSetRecoilState(toDoState);
+  const categories = useRecoilValue(CategoriesState);
   const onClick = (newCategory: IToDo["category"]) => {
     setToDos(oldToDos => {
       return oldToDos.map((todo) => {
@@ -11,26 +27,29 @@ const ToDo = ({ text, category, id }: IToDo) => {
       })
     });
   }
+  const deleteToDo = (e: React.MouseEvent<HTMLButtonElement>) => {
+    setToDos(oldToDos => oldToDos.filter((toDo) => toDo.id !== id))
+  }
 
   return (
-    <li>
-      {text}
-      {category !== Categories.DOING && (
-        <button onClick={() => onClick(Categories.DOING)}>
-          Doing
-        </button>
-      )}
-      {category !== Categories.TO_DO &&(
-        <button onClick={() => onClick(Categories.TO_DO)}>
-          To Do
-        </button>
-      )}
-      {category !== Categories.DONE && (
-        <button onClick={() => onClick(Categories.DONE)}>
-          Done
-        </button>
-      )}
-    </li>
+    <Li>
+      <ToDoWrap>
+      <div>
+        {text} 
+        <DeleteButton onClick={deleteToDo}>⛔️</DeleteButton>
+      </div>
+      <div>
+      {categories
+        .filter((elCategory) => elCategory !== category)
+        .map(flt => {
+          return (
+            <button key={flt + 'ii'} onClick={() => onClick(flt)}>{flt}</button>
+          )
+        })
+      }
+      </div>
+      </ToDoWrap>
+    </Li>
   )
 }
 

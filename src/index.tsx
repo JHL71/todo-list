@@ -63,6 +63,9 @@ body {
 a {
   text-decoration: none;
 }
+li {
+  list-style: none;
+}
 `
 
 const root = ReactDOM.createRoot(
